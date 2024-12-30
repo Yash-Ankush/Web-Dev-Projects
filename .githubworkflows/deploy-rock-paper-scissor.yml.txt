@@ -1,0 +1,50 @@
+name: Deploy Web Projects to GitHub Pages
+
+on:
+  push:
+    paths:
+      - 'web-dev-projects/basics/rock-paper-scissor/**'
+      - 'web-dev-projects/basics/tic-tac-toe/**' # Trigger when changes occur in both projects
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Set up Node.js for both projects
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16' # Adjust as necessary
+
+      # Install dependencies for both projects
+      - name: Install dependencies for both projects
+        run: |
+          cd web-dev-projects/basics/rock-paper-scissor
+          npm install
+          cd ../tic-tac-toe
+          npm install
+
+      # Build both projects
+      - name: Build both projects
+        run: |
+          cd web-dev-projects/basics/rock-paper-scissor
+          npm run build
+          cd ../tic-tac-toe
+          npm run build
+
+      # Upload build artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: |
+            web-dev-projects/basics/rock-paper-scissor/build
+            web-dev-projects/basics/tic-tac-toe/build
+
+      # Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
